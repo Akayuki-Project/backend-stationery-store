@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema({
     transaction_id: {
         type: String,
     },
-    first_name: {  // ✅ Perbaiki typo "fisrt_name" -> "first_name"
+    first_name: {
         type: String,
     },
     amount: {

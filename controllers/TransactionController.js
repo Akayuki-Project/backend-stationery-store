@@ -1,41 +1,51 @@
-const Transaction = require("../models/Transaction"); 
-const midtransclient = require("midtrans-client"); 
-// Menambahkan product baru 
-exports.createTransaction = async (req, res) => { 
-try { 
-const { first_name, amount, product_id } = req.body; 
-// Create Snap API instance 
-let snap = new midtransClient.Snap({ 
-// Set to true if you want Production Environment (accept real transaction). 
-isProduction: false, 
-serverKey: process.env.MIDTRANS_SERVERKEY, 
-}); 
-const order_id = "ORDER-" + new Date().getTime() 
-const parameter = { 
-transaction_details: { 
-order_id: order_id, 
-gross_amount: amount, 
-}, 
-credit_card: { 
-secure: true, 
-}, 
-customer_details: { 
-first_name: first_name, 
-}, 
-}; 
- 
-const transaction = await snap.createTransaction (parameter);
+const Transaction = require("../models/Transaction");
+const midtransClient = require("midtrans-client");
 
-const transactionUrl = transaction.redirect_url; 
+exports.createTransaction = async (req, res) => {
+  try {
+    const { first_name, amount, product_id } = req.body;
 
-const newTransaction = new Transaction({ 
-...req.body, 
-midtrans_url: transactionUrl,
-transaction_id: order_id 
-}); 
-await newTransaction.save(); 
-es.status(201).json (newTransaction); 
-} catch (err) { 
-res.status(400).json({ message: err.message }); 
-} 
+    // Membuat instance Snap Midtrans
+    const snap = new midtransClient.Snap({
+      isProduction: false,
+      serverKey: process.env.MIDTRANS_SERVER_KEY,
+    });
+
+    const order_id = `ORDER-${Date.now()}`;
+
+    const parameter = {
+      transaction_details: {
+        order_id: order_id,
+        gross_amount: amount,
+      },
+      credit_card: {
+        secure: true,
+      },
+      customer_details: {
+        first_name: first_name,
+      },
+      callbacks: {
+        finish: `http://localhost:5173/product`,
+      },
+    };
+
+    // Buat transaksi dan dapatkan URL pembayaran Midtrans
+    const transaction = await snap.createTransaction(parameter);
+    const transactionUrl = transaction.redirect_url;
+
+    // Simpan transaksi ke database
+    const newTransaction = new Transaction({
+      ...req.body,
+      transaction_id: order_id,
+      midtrans_url: transactionUrl,
+    });
+
+    await newTransaction.save();
+
+    // Kirim response ke frontend
+    res.status(201).json(newTransaction);
+  } catch (err) {
+    console.error("Gagal membuat transaksi:", err);
+    res.status(400).json({ message: err.message });
+  }
 };

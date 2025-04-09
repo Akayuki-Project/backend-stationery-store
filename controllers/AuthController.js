@@ -10,7 +10,7 @@ expiresIn: '1h',
 exports.signIn = async (req, res) => { 
 console.log('req', req.body) 
 const { email, password } = req.body; 
-I 
+
 try { 
 
 const user = await User.findOne({ email }); 

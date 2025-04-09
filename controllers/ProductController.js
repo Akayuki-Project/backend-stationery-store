@@ -1,5 +1,6 @@
 const Product = require("../models/Product"); 
 const cloudinary = require("../config/cloudinary"); 
+
 exports.getProducts = async (req, res) => { 
 try { 
 const products = await Product.find(); 
@@ -8,6 +9,7 @@ res.status(200).json (products);
 res.status(500).json({ message: err.message }); 
 } 
 }; 
+
 exports.getDetailProduct = async (req, res) => { 
 try { 
 const {id} = req.params;
@@ -27,7 +29,7 @@ exports.createProduct = async (req, res) => {
         const result = await cloudinary.uploader.upload(req.file.path);
         const product = new Product({
             ...req.body,
-            tumbnail: result?.secure_url,
+            thumbnail: result?.secure_url,
             cloudinaryId: result?.public_id,
         });
     
@@ -41,7 +43,10 @@ exports.createProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req,params.id);
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found"});
+        }
         await cloudinary.uploader.destroy(product.cloudinaryId);
 
         await product.deleteOne();
@@ -49,7 +54,7 @@ exports.deleteProduct = async (req, res) => {
         res.status(200).json({ message: "Product deleted succesfully"});
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Faiiled to delete product"});
+        res.status(500).json({ error: "Failed to delete product"});
     }
 };
 
@@ -70,6 +75,9 @@ exports.updateProduct = async (req, res) => {
     ...req.body, 
     thumbnail: result?.secure_url || product.thumbnail, 
     cloudinaryId: result?.public_id || product.cloudinaryId,
+    rating: req.body.rating !== undefined ? Number(req.body.rating) : product.rating,
+    ratingCount: req.body.ratingCount !== undefined ? Number(req.body.ratingCount) : product.ratingCount,
+    sales: req.body.sales !== undefined ? Number(req.body.sales) : product.sales,
     };
 
     product = await Product.findByIdAndUpdate(id, updatedProduct, {new:true});

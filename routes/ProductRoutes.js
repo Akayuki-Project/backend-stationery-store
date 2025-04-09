@@ -7,8 +7,7 @@ getDetailProduct,
 deleteProduct, 
 updateProduct, 
 } = require("../controllers/ProductController.js"); 
-
-const upload = multer({ dest: "uploads/products/" })
+const upload = multer({ dest: "uploads/products" })
 const router = express. Router(); 
 
 router.get("/", getProducts); 
