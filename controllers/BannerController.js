@@ -11,18 +11,18 @@ exports.getBanners = async (req, res) => {
   }
 };
 
-exports.getDetailBanner = async (req, res) => { 
-try { 
-const {id} = req.params;
-const banner = await Banner.findById(id); 
-if (!banner) { 
-return res.status(404).json({ message: "Product not found" }); 
-} 
-res.json(banner); 
-} catch (error) { 
-console.error(error);
-res.status(500).json({message: "Server error"});
-}
+exports.getDetailBanner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const banner = await Banner.findById(id);
+    if (!banner) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(banner);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Create Banner
@@ -70,7 +70,7 @@ exports.updateBanner = async (req, res) => {
     if (!banner) {
       return res.status(404).json({ message: "Banner not found" });
     }
-    console.log('req.file', req.file);
+    console.log("req.file", req.file);
     let result;
     if (req.file) {
       await cloudinary.uploader.destroy(banner.cloudinaryId);
@@ -84,7 +84,6 @@ exports.updateBanner = async (req, res) => {
       description1: req.body.description || banner.description1,
       description2: req.body.description || banner.description2,
       disconnect: req.body.disconnect || banner.disconnect,
-
     };
 
     banner = await Banner.findByIdAndUpdate(id, updatedBanner, { new: true });

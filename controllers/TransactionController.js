@@ -25,7 +25,7 @@ exports.createTransaction = async (req, res) => {
         first_name: first_name,
       },
       callbacks: {
-        finish: `http://localhost:5173/product`,
+        finish: `http://localhost:5173/success-payment/${product_id}`,
       },
     };
 

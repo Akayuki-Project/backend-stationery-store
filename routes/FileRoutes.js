@@ -1,8 +1,8 @@
-const express = require('express');
-const multer = require('multer');
-const { uploadFile } = require('../controllers/FileController');
-const fs = require('fs');
-const path = require('path');
+const express = require("express");
+const multer = require("multer");
+const { uploadFile } = require("../controllers/FileController");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ const createFolderIfNotExist = (folderPath) => {
 // Storage untuk produk
 const productStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folderPath = 'uploads/products/';
+    const folderPath = "uploads/products/";
     createFolderIfNotExist(folderPath);
     cb(null, folderPath);
   },
@@ -29,7 +29,7 @@ const uploadProduct = multer({ storage: productStorage });
 // Storage untuk banner
 const bannerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folderPath = 'uploads/banners/';
+    const folderPath = "uploads/banners/";
     createFolderIfNotExist(folderPath);
     cb(null, folderPath);
   },
@@ -40,9 +40,9 @@ const bannerStorage = multer.diskStorage({
 const uploadBanner = multer({ storage: bannerStorage });
 
 // Rute upload produk
-router.post('/uploads/products', uploadProduct.single('file'), uploadFile);
+router.post("/uploads/products", uploadProduct.single("file"), uploadFile);
 
 // Rute upload banner
-router.post('/uploads/banners', uploadBanner.single('file'), uploadFile);
+router.post("/uploads/banners", uploadBanner.single("file"), uploadFile);
 
 module.exports = router;
