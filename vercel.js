@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)", // semua rute API diarahkan ke server.js
-      "dest": "/server.js"
+      "src": "/(.*)",
+      "dest": "server.js"
     }
   ]
 }
