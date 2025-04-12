@@ -7,7 +7,8 @@ const {
   deleteBanner,
   updateBanner,
 } = require("../controllers/BannerController.js");
-const upload = multer({ dest: "uploads/banners" });
+const { bannerstorage } = require("../config/cloudinary");
+const upload = multer({ storage: bannerstorage });
 const router = express.Router();
 
 router.get("/", getBanners);

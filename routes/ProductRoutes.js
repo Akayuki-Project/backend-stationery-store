@@ -7,7 +7,8 @@ const {
   deleteProduct,
   updateProduct,
 } = require("../controllers/ProductController.js");
-const upload = multer({ dest: "uploads/products" });
+const { productstorage } = require("../config/cloudinary");
+const upload = multer({ storage: productstorage });
 const router = express.Router();
 
 router.get("/", getProducts);
@@ -15,4 +16,5 @@ router.get("/:id", getDetailProduct);
 router.delete("/:id", deleteProduct);
 router.patch("/:id", upload.single("thumbnail"), updateProduct);
 router.post("/", upload.single("thumbnail"), createProduct);
+
 module.exports = router;

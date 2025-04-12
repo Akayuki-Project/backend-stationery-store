@@ -26,7 +26,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/banners", bannerRoutes);
 
 // Jalankan server hanya jika tidak dijalankan di serverless (vercel)
-if (process.env.NODE_ENV !== "production") {
+if (require.main === module) {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () =>
       console.log(`Server Running on http://localhost:${PORT}`)
