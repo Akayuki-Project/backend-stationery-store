@@ -7,7 +7,16 @@ const {
   deleteProduct,
   updateProduct,
 } = require("../controllers/ProductController.js");
-const { productstorage } = require("../config/cloudinary");
+const cloudinary = require("../config/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const productstorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "uploads/products/", // folder di Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    transformation: [{ width: 800, height: 800, crop: "limit" }],
+  },
+});
 const upload = multer({ storage: productstorage });
 const router = express.Router();
 
