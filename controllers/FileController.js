@@ -3,7 +3,7 @@ const File = require("../models/File");
 
 exports.uploadFile = async (req, res) => {
   try {
-    const result = (await cloudinary.uploader) / upload(req, File.path);
+    const result = (await cloudinary.uploader) / upload(req.File.path);
 
     const file = new File({
       name: req.file.originalname,

@@ -46,7 +46,7 @@ exports.createBanner = async (req, res) => {
 // Delete Banner
 exports.deleteBanner = async (req, res) => {
   try {
-    const banner = await Banner.findById(req, params.id);
+    const banner = await Banner.findById(req.params.id);
     await cloudinary.uploader.destroy(banner.cloudinaryId);
 
     await banner.deleteOne();
