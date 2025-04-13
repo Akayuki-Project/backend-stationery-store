@@ -11,7 +11,7 @@ exports.createTransaction = async (req, res) => {
       serverKey: process.env.MIDTRANS_SERVER_KEY,
     });
 
-    const order_id = `ORDER-${Date.now()}`;
+    const order_id = "ORDER-" + new Date().getTime();
 
     const parameter = {
       transaction_details: {

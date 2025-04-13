@@ -25,14 +25,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/banners", bannerRoutes);
 
-// Jalankan server hanya jika tidak dijalankan di serverless (vercel)
-if (require.main === module) {
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () =>
-      console.log(`Server Running on http://localhost:${PORT}`)
-    );
-  }
-  
-  // Export untuk Vercel
-  module.exports = app;
-  module.exports.handler = serverless(app);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server Running on http://localhost:${PORT}`));

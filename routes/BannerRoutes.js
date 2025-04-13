@@ -1,5 +1,7 @@
 const express = require("express");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 const {
   getBanners,
   getDetailBanner,
@@ -7,14 +9,12 @@ const {
   deleteBanner,
   updateBanner,
 } = require("../controllers/BannerController.js");
-const cloudinary = require("../config/cloudinary.js");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 const bannerstorage = new CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinary,
   params: {
-    folder: "uploads/banners/", // folder di Cloudinary
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
-    transformation: [{ width: 800, height: 800, crop: "limit" }],
+    folder: "banners",
+    allowed_formats: ["jpg", "jpeg", "png"],
   },
 });
 

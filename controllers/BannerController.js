@@ -1,5 +1,6 @@
 const Banner = require("../models/Banner");
 const cloudinary = require("../config/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 // Get All Banners
 exports.getBanners = async (req, res) => {
@@ -28,12 +29,10 @@ exports.getDetailBanner = async (req, res) => {
 // Create Banner
 exports.createBanner = async (req, res) => {
   try {
-    const result = await cloudinary.uploader.upload(req.file.path);
-
     const banner = new Banner({
       ...req.body,
-      thumbnail: result?.secure_url,
-      cloudinaryId: result.public_id,
+      thumbnail: req.file?.path, // Ini sudah berisi secure_url dari Cloudinary
+      cloudinaryId: req.file?.filename, // Ini adalah public_id dari Cloudinary
     });
 
     await banner.save();
@@ -47,11 +46,7 @@ exports.createBanner = async (req, res) => {
 // Delete Banner
 exports.deleteBanner = async (req, res) => {
   try {
-    const banner = await Banner.findById(req.params.id);
-    if (!banner) {
-      return res.status(404).json({ message: "Banner not found" });
-    }
-
+    const banner = await Banner.findById(req, params.id);
     await cloudinary.uploader.destroy(banner.cloudinaryId);
 
     await banner.deleteOne();
@@ -71,22 +66,30 @@ exports.updateBanner = async (req, res) => {
       return res.status(404).json({ message: "Banner not found" });
     }
     console.log("req.file", req.file);
-    let result;
+    console.log("req.body", req.body);
+
+    let secure_url = banner.thumbnail;
+    let public_id = banner.cloudinaryId;
+
     if (req.file) {
       await cloudinary.uploader.destroy(banner.cloudinaryId);
-      result = await cloudinary.uploader.upload(req.file.path);
-    }
 
+      // Gunakan file baru dari multer-storage-cloudinary
+      secure_url = req.file.path; // ini secure_url
+      public_id = req.file.filename; // ini public_id
+    }
     const updatedBanner = {
       ...req.body,
-      thumbnail: result?.secure_url || banner.thumbnail,
-      cloudinaryId: result?.public_id || banner.cloudinaryId,
-      description1: req.body.description || banner.description1,
-      description2: req.body.description || banner.description2,
+      thumbnail: secure_url,
+      cloudinaryId: public_id,
+      description1: req.body.description1 || banner.description1,
+      description2: req.body.description2 || banner.description2,
       disconnect: req.body.disconnect || banner.disconnect,
     };
 
-    banner = await Banner.findByIdAndUpdate(id, updatedBanner, { new: true });
+    banner = await Banner.findByIdAndUpdate(id, updatedBanner, { 
+      new: true,
+    });
 
     res.status(200).json(banner);
   } catch (err) {

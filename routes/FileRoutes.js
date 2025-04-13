@@ -1,48 +1,29 @@
 const express = require("express");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 const { uploadFile } = require("../controllers/FileController");
-const fs = require("fs");
-const path = require("path");
+
+// Konfigurasi Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Konfigurasi penyimpanan Cloudinary
+const filestorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "uploads", // folder di Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png", "pdf", "docx", "xlsx"], // kamu bisa sesuaikan
+  },
+});
+
+const upload = multer({ storage: filestorage });
 
 const router = express.Router();
 
-// Buat folder upload kalau belum ada
-const createFolderIfNotExist = (folderPath) => {
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-  }
-};
-
-// Storage untuk produk
-const productStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folderPath = "uploads/products/";
-    createFolderIfNotExist(folderPath);
-    cb(null, folderPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-const uploadProduct = multer({ storage: productStorage });
-
-// Storage untuk banner
-const bannerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folderPath = "uploads/banners/";
-    createFolderIfNotExist(folderPath);
-    cb(null, folderPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-const uploadBanner = multer({ storage: bannerStorage });
-
-// Rute upload produk
-router.post("/uploads/products", uploadProduct.single("file"), uploadFile);
-
-// Rute upload banner
-router.post("/uploads/banners", uploadBanner.single("file"), uploadFile);
+router.post("/uploads", upload.single("file"), uploadFile);
 
 module.exports = router;

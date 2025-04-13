@@ -26,11 +26,10 @@ exports.getDetailProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const result = await cloudinary.uploader.upload(req.file.path);
     const product = new Product({
       ...req.body,
-      thumbnail: result?.secure_url,
-      cloudinaryId: result?.public_id,
+      thumbnail: req.file?.path, // Ini sudah berisi secure_url dari Cloudinary
+      cloudinaryId: req.file?.filename, // Ini adalah public_id dari Cloudinary
     });
 
     await product.save();
@@ -43,10 +42,7 @@ exports.createProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    const product = await Product.findById(req, params.id);
     await cloudinary.uploader.destroy(product.cloudinaryId);
 
     await product.deleteOne();
@@ -66,15 +62,22 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     console.log("req.file", req.file);
-    let result;
+    console.log("req.body", req.body);
+
+    let secure_url = product.thumbnail;
+    let public_id = product.cloudinaryId;
+
     if (req.file) {
       await cloudinary.uploader.destroy(product.cloudinaryId);
-      result = await cloudinary.uploader.upload(req.file.path);
+
+      // Gunakan file baru dari multer-storage-cloudinary
+      secure_url = req.file.path; // ini secure_url
+      public_id = req.file.filename; // ini public_id
     }
     const updatedProduct = {
       ...req.body,
-      thumbnail: result?.secure_url || product.thumbnail,
-      cloudinaryId: result?.public_id || product.cloudinaryId,
+      thumbnail: secure_url,
+      cloudinaryId: public_id,
       rating:
         req.body.rating !== undefined
           ? Number(req.body.rating)
