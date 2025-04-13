@@ -25,5 +25,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/banners", bannerRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server Running on http://localhost:${PORT}`));
+// ✅ Tambahkan ini:
+app.get("/", (req, res) => {
+  res.send("API is running! 🎉");
+});
+
+// Export handler untuk Vercel
+module.exports = app;
+module.exports.handler = serverless(app);
+
+// Jalankan lokal hanya jika TIDAK di serverless (misalnya Vercel)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server Running on http://localhost:${PORT}`));
+}
