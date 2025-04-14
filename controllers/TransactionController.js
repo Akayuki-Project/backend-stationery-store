@@ -30,7 +30,8 @@ exports.createTransaction = async (req, res) => {
 
     // Dapatkan Snap Token, bukan URL
     const transaction = await snap.createTransaction(parameter);
-    const snapToken = transaction.redirect_url;
+    const snapToken = transaction.token;
+    const transactionUrl = transaction.redirect_url;
 
     // Simpan ke database
     const newTransaction = new Transaction({
