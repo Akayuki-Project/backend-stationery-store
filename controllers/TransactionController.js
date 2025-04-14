@@ -25,7 +25,7 @@ exports.createTransaction = async (req, res) => {
         first_name: first_name,
       },
       callbacks: {
-        finish: `https://backend-stationery-store.vercel.app/success-payment/${product_id}`,
+        finish: `https://website-stationery-store.vercel.app/success-payment/${product_id}`,
       },
     };
 
