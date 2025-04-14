@@ -45,7 +45,7 @@ exports.createTransaction = async (req, res) => {
     // Kirim response ke frontend
     res.status(201).json({
       message: "Transaksi berhasil dibuat",
-      midtrans_url: snapToken,
+      snap_token: snapToken,
       transaction_id: order_id,
     });
   } catch (err) {
