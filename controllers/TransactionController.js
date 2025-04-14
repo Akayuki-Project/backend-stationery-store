@@ -37,8 +37,7 @@ exports.createTransaction = async (req, res) => {
     const newTransaction = new Transaction({
       ...req.body,
       transaction_id: order_id,
-      snap_token: snapToken, // simpan snap_token
-      midtrans: transactionUrl,
+      midtrans_url: snapToken, // simpan snap_token
     });
 
     await newTransaction.save();
