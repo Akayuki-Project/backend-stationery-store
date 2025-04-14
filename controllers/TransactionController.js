@@ -5,7 +5,6 @@ exports.createTransaction = async (req, res) => {
   try {
     const { first_name, amount, product_id } = req.body;
 
-    // Membuat instance Snap Midtrans
     const snap = new midtransClient.Snap({
       isProduction: false,
       serverKey: process.env.MIDTRANS_SERVER_KEY,
@@ -25,25 +24,29 @@ exports.createTransaction = async (req, res) => {
         first_name: first_name,
       },
       callbacks: {
-        finish: `https://website-stationery-store.vercel.app/success-payment/${product_id}`,
+        finish: `${process.env.CLIENT_URL}/success-payment/${product_id}`,
       },
     };
 
-    // Buat transaksi dan dapatkan URL pembayaran Midtrans
+    // Dapatkan Snap Token, bukan URL
     const transaction = await snap.createTransaction(parameter);
-    const transactionUrl = transaction.redirect_url;
+    const snapToken = transaction.token;
 
-    // Simpan transaksi ke database
+    // Simpan ke database
     const newTransaction = new Transaction({
       ...req.body,
       transaction_id: order_id,
-      midtrans_url: transactionUrl,
+      snap_token: snapToken, // simpan snap_token
     });
 
     await newTransaction.save();
 
     // Kirim response ke frontend
-    res.status(201).json(newTransaction);
+    res.status(201).json({
+      message: "Transaksi berhasil dibuat",
+      snap_token: snapToken,
+      transaction_id: order_id,
+    });
   } catch (err) {
     console.error("Gagal membuat transaksi:", err);
     res.status(400).json({ message: err.message });
