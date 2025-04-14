@@ -8,6 +8,13 @@ dotenv.config();
 connectDB();
 const app = express();
 
+// Izinkan domain frontend
+app.use(cors({
+  origin: 'https://website-stationery-store.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  credentials: true // kalau pakai cookie/auth
+}));
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
