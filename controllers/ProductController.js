@@ -78,14 +78,6 @@ exports.updateProduct = async (req, res) => {
       ...req.body,
       thumbnail: secure_url,
       cloudinaryId: public_id,
-      rating:
-        req.body.rating !== undefined
-          ? Number(req.body.rating)
-          : product.rating,
-      ratingCount:
-        req.body.ratingCount !== undefined
-          ? Number(req.body.ratingCount)
-          : product.ratingCount,
       sales:
         req.body.sales !== undefined ? Number(req.body.sales) : product.sales,
     };
